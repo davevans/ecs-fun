@@ -1,0 +1,80 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Fully sick ECS cluster cloudformation template
+Resources: 
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: dav-ecs-cluster
+      CapacityProviders:
+      - FARGATE
+      ClusterSettings:
+      - Name: containerInsights
+        Value: enabled  
+      Configuration:
+        ExecuteCommandConfiguration:
+          Logging: DEFAULT
+      ServiceConnectDefaults:
+        Namespace: dav-ecs-cluster
+  ALBIngressFromInternetSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http from the internet
+      VpcId: vpc-557f4332
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+  ALBToECSTaskSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: vpc-557f4332
+      GroupDescription: Allow http from ALB
+  ALBToECSTaskSecurityGroupIngress:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    Properties:
+      IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      GroupId: !Ref ALBToECSTaskSecurityGroup
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - ALBIngressFromInternetSecurityGroup
+          - GroupId
+  ALBForECS:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties: 
+      IpAddressType: ipv4
+      Name: DavECSALB
+      Scheme: internet-facing
+      SecurityGroups: 
+        - !Ref ALBIngressFromInternetSecurityGroup
+      Subnets: 
+        - subnet-87be29df
+        - subnet-6ee1f727
+        - subnet-84b155e2
+      Type: application
+  
+  ALBForECSListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref ALBForECS
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref ALBForECSDefaultTargetGroup
+  
+  ALBForECSDefaultTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: ALBForECSDefaultTargetGroup
+      VpcId: vpc-557f4332
+      Port: 80
+      Protocol: HTTP
+      TargetType: ip

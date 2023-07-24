@@ -1,0 +1,29 @@
+{
+    "containerDefinitions": [
+        {
+            "name": "colour-app",
+            "image": "davevans/colourapp:v2.0.0",           
+            "essential": true,
+            "portMappings": [
+                {
+                    "containerPort": 80,
+                    "hostPort": 80,
+                    "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                {
+                    "name": "COLOUR",
+                    "value": "Red"
+                }
+            ]
+        }
+    ],
+    "networkMode": "awsvpc", 
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "family": "colour-app",
+    "cpu": "256", 
+    "memory": "512"
+}

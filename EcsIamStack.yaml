@@ -1,0 +1,73 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Fully sick ECS cluster cloudformation template
+
+Resources: 
+  DavECSPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument: 
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: 
+            - ecs:UpdateCluster
+            - ecs:ListAttributes
+            - ecs:ExecuteCommand
+            - ecs:UpdateContainerInstancesState
+            - ecs:UpdateTaskProtection
+            - ecs:StartTask
+            - ecs:RegisterContainerInstance
+            - ecs:DescribeTaskSets
+            - ecs:DescribeTaskDefinition
+            - ecs:SubmitAttachmentStateChanges
+            - ecs:CreateCapacityProvider
+            - ecs:ListServices
+            - ecs:UpdateService
+            - ecs:DescribeCapacityProviders
+            - ecs:CreateService
+            - ecs:RunTask
+            - ecs:ListTasks
+            - ecs:StopTask
+            - ecs:DescribeServices
+            - ecs:SubmitContainerStateChange
+            - ecs:DescribeContainerInstances
+            - ecs:TagResource
+            - ecs:DescribeTasks
+            - ecs:PutClusterCapacityProviders
+            - ecs:ListTaskDefinitions
+            - ecs:UpdateTaskSet
+            - ecs:CreateTaskSet
+            - ecs:ListClusters
+            - ecs:SubmitTaskStateChange
+            - ecs:GetTaskProtection
+            - ecs:ListServicesByNamespace
+            - ecs:PutAccountSettingDefault
+            - ecs:UpdateClusterSettings
+            - ecs:CreateCluster
+            - ecs:UpdateCapacityProvider
+            - ecs:DescribeClusters
+            - ecs:PutAccountSetting
+            - ecs:ListAccountSettings
+            - ecs:ListTagsForResource
+            - ecs:ListTaskDefinitionFamilies
+            - ecs:UpdateContainerAgent
+            - ecs:ListContainerInstances
+            - ecs:UpdateServicePrimaryTaskSet
+            Resource:
+            - "*"
+  DavDeployECSRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                AWS:
+                  - arn:aws:iam::289410895629:user/DavDeploy
+              Action:
+                - 'sts:AssumeRole'
+      Description: Awesome DavECSPolicy Role
+      RoleName: DavDeployECSRole
+      ManagedPolicyArns: 
+        - !Ref DavECSPolicy

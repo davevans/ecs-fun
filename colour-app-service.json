@@ -1,0 +1,31 @@
+{
+    "cluster": "dav-ecs-cluster",
+    "serviceName": "colour-app-service",
+    "taskDefinition": "colour-app:3",
+    "loadBalancers": [
+        {
+            "targetGroupArn": "arn:aws:elasticloadbalancing:ap-southeast-2:289410895629:targetgroup/ALBForECSDefaultTargetGroup/8d034ad8665a48db",
+            "containerName": "colour-app",
+            "containerPort": 80
+        }
+    ],
+    "desiredCount": 1,
+    "launchType": "FARGATE",
+    "platformVersion": "LATEST",
+    "healthCheckGracePeriodSeconds": 20,
+    "schedulingStrategy": "REPLICA",
+    "deploymentController": {
+        "type": "ECS"
+    },
+    "enableECSManagedTags": true,
+    "propagateTags": "TASK_DEFINITION",
+    "enableExecuteCommand": false,
+    "networkConfiguration":
+    {
+        "awsvpcConfiguration": {
+          "subnets": ["subnet-87be29df"],
+          "securityGroups": ["sg-0241476dbc1013033", "sg-056ff6840df673e2f"],
+          "assignPublicIp": "ENABLED"
+        }
+    }
+}

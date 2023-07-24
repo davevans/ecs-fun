@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Cloudformation for creation of IAM role / policy that can do create stack
+Resources: 
+  DavCICDRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                AWS:
+                  - arn:aws:iam::289410895629:user/DavDeploy
+              Action:
+                - 'sts:AssumeRole'
+      Description: CICD cloudformation deployment
+      RoleName: DavCICDRole
+      ManagedPolicyArns: 
+        - arn:aws:iam::aws:policy/AWSCloudFormationFullAccess
+        - arn:aws:iam::aws:policy/IAMFullAccess
+        - arn:aws:iam::289410895629:policy/ecs-policy
+        - arn:aws:iam::aws:policy/AmazonEC2FullAccess
+
